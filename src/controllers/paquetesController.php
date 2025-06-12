@@ -12,7 +12,7 @@ class PaquetesController {
 
     public static function obtenerTodos() {
         $paquetes = PaquetesService::obtenerTodos();
-        $xml = XmlHandler::generarXml($paquetes, 'Paquetes', 'Paquete');
+        $xml = XmlHandler::generarXML($paquetes, 'Paquetes', 'Paquete');
         return $xml;
     }
 
@@ -22,7 +22,7 @@ class PaquetesController {
             header('HTTP/1.1 404 Not Found');
             return '<error>Paquete no encontrado</error>';
         }
-        echo XmlHandler::generarXml($paquete, 'Paquetes', 'Paquete');
+        echo XmlHandler::generarXML($paquete, 'Paquetes', 'Paquete');
     }
 
     public static function crearPaquete() {
