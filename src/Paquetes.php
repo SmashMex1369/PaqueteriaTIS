@@ -15,6 +15,7 @@ $xml = simplexml_load_string($xmlContent);
     <div id="resultado"></div>
 
     <h2 id="tituloTabla">Todos los Paquetes</h2>
+    <button onclick="mostrarFormularioPaquete()">Crear Paquete</button>
     <table border="1">
         <thead>
             <tr>
@@ -48,10 +49,83 @@ $xml = simplexml_load_string($xmlContent);
         </tbody>
     </table>
 
+    <div id="formPaqueteModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+    <h3>Agregar Paquete</h3>
+    <form id="formPaquete" onsubmit="enviarPaquete(event)">
+        <label>Descripción: <input type="text" id="formDescripcion" required></label><br>
+        <label>Peso (kg): <input type="number" id="formPeso" step="0.01" required></label><br>
+        <label>Alto (cm): <input type="number" id="formAlto" step="0.01" required></label><br>
+        <label>Ancho (cm): <input type="number" id="formAncho" step="0.01" required></label><br>
+        <label>Largo (cm): <input type="number" id="formLargo" step="0.01" required></label><br>
+        <label>ID Repartidor: <input type="number" id="formIDRepartidor" required></label><br>
+        <label>ID Destino: <input type="number" id="formIDDestino" required></label><br>
+        <button type="submit">Agregar</button>
+        <button type="button" onclick="cerrarFormularioPaquete()">Cancelar</button>
+    </form>
+</div>
+
     <script>
     const busqueda = document.getElementById('busqueda');
     const tituloTabla = document.getElementById('tituloTabla');
     const tablaPaquetes = document.getElementById('tablaPaquetes');
+
+    function mostrarFormularioPaquete() {
+        document.getElementById('formPaqueteModal').style.display = 'block';
+    }
+    function cerrarFormularioPaquete() {
+        document.getElementById('formPaqueteModal').style.display = 'none';
+        document.getElementById('formPaquete').reset();
+    }
+    function generarNoGuia() {
+        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let nums = '0123456789';
+        let guia = '';
+        for (let i = 0; i < 5; i++) {
+            guia += chars.charAt(Math.floor(Math.random() * chars.length));
+            guia += nums.charAt(Math.floor(Math.random() * nums.length));
+        }
+        return guia;
+    }
+    function enviarPaquete(event) {
+        event.preventDefault();
+        const descripcion = document.getElementById('formDescripcion').value;
+        const peso = document.getElementById('formPeso').value;
+        const alto = document.getElementById('formAlto').value;
+        const ancho = document.getElementById('formAncho').value;
+        const largo = document.getElementById('formLargo').value;
+        const idRepartidor = document.getElementById('formIDRepartidor').value;
+        const idDestino = document.getElementById('formIDDestino').value;
+        const noGuia = generarNoGuia();
+
+        const xmlBody = `<Paquete>
+            <NoGuia>${noGuia}</NoGuia>
+            <Descripcion>${descripcion}</Descripcion>
+            <Peso>${peso}</Peso>
+            <Dimensiones>
+                <Alto>${alto}</Alto>
+                <Ancho>${ancho}</Ancho>
+                <Largo>${largo}</Largo>
+            </Dimensiones>
+            <IDRepartidor>${idRepartidor}</IDRepartidor>
+            <IDDestino>${idDestino}</IDDestino>
+        </Paquete>`;
+
+        fetch('http://localhost:5000/api/paquetes/crearPaquete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/xml' },
+            body: xmlBody
+        })
+        .then(response => response.text())
+        .then(msg => {
+            alert("Paquete agregado exitosamente");
+            cerrarFormularioPaquete();
+            cargarTodosLosPaquetes();
+        })
+        .catch(error => {
+            alert("Error al agregar el paquete");
+            cerrarFormularioPaquete();
+        });
+    }
 
     function completarPaquete(noGuia) {
         if (confirm("¿Desea marcar el paquete como Completado?")) {
