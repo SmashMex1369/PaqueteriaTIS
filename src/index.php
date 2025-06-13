@@ -1,4 +1,8 @@
 <?php
+
+require_once __DIR__ . '/../middleware/Cors.php';
+Cors::permitirOrigen();
+
 $request_uri = $_SERVER['REQUEST_URI'];
 
 if (strpos($request_uri, '/api/paquetes') === 0) {
