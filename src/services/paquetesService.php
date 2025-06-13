@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../models/Paquetes.php';
 require_once __DIR__ . '/../config/database.php';
 
-
 class PaquetesService {
     public static function obtenerTodos() {
         return Paquetes::obtenerTodos();
@@ -18,5 +17,9 @@ class PaquetesService {
 
     public static function completarEnvio($guia) {
         return Paquetes::completarEnvio($guia);
+    }
+
+    public static function obtenerGuiasPorIdRepartidor($idRepartidor) {
+        return Paquetes::obtenerGuiasPorIdRepartidor($idRepartidor);
     }
 }

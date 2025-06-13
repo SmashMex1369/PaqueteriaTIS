@@ -3,30 +3,6 @@ require_once __DIR__ .  '/../config/database.php';
 
 class Paquetes {
 
-    private $apiUrl = 'http://localhost:5000/api/paquetes';
-
-    private function sendRequest($url, $method, $xmlData = null) {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,
-        ["Content-Type: application/xml"]);
-
-        if ($xmlData) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlData);
-        }
-
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            die('Error en la solicitud: ' . curl_error($ch));
-        }
-
-        curl_close($ch);
-
-        return $response;
-    }
-
     public static function obtenerTodos() {
         global $conn;
         $sql = "SELECT * FROM paquetes";
@@ -93,6 +69,24 @@ class Paquetes {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $guia);
         return $stmt->execute();
+    }
+
+    public static function obtenerGuiasPorIdRepartidor($idRepartidor) {
+        global $conn;
+        $sql = "SELECT numGuia FROM paquetes WHERE repartidor_idrepartidor = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $idRepartidor);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $paquetes = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $paquetes[] = [
+                    'NoGuia' => $row['numGuia'],
+                ];
+            }
+        }
+        return $paquetes;
     }
 }
 ?>

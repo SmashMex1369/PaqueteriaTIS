@@ -5,19 +5,14 @@ require_once __DIR__ . '/../models/Clientes.php';
 
 class ClientesController {
 
-    private $modelo;
-    public function __construct() {
-        $this->modelo = new Clientes();
-    }
-
     public static function obtenerTodos() {
         $clientes = ClientesService::obtenerTodos();
         $xml = XmlHandler::generarXML($clientes, 'Clientes', 'Cliente');
         return $xml;
     }
 
-    public static function buscarClientes($id) {
-        $cliente = ClientesService::buscarClientes($id);
+    public static function buscarCliente($id) {
+        $cliente = ClientesService::buscarCliente($id);
         if(!$cliente) {
             header('HTTP/1.1 404 Not Found');
             return '<error>Cliente no encontrado</error>';
@@ -39,6 +34,25 @@ class ClientesController {
         } else {
             header('HTTP/1.1 500 Internal Server Error');
             echo "<Error>Error al registrar el cliente</Error>";
+        }
+    }
+
+    public static function registrarDestino() {
+        $data = file_get_contents('php://input');
+        $xml = simplexml_load_string($data);
+
+        $idCliente = (int)$xml->IDCliente;
+        $codPostal = (string)$xml->Direccion->{'C.P.'};
+        $colonia = (string)$xml->Direccion->Colonia;
+        $calle = (string)$xml->Direccion->Calle;
+        $num = (string)$xml->Direccion->Numero;
+
+        if(ClientesService::registrarDestino($idCliente, $codPostal, $colonia, $calle, $num)) {
+            header('HTTP/1.1 201 Created');
+            echo "<Respuesta>Destino registrado exitosamente</Respuesta>";
+        } else {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo "<Error>Error al registrar el destino</Error>";
         }
     }
 

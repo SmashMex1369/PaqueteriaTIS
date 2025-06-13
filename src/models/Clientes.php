@@ -3,30 +3,6 @@ require_once __DIR__ .  '/../config/database.php';
 
 class Clientes {
 
-    private $apiUrl = 'http://localhost:5000/api/clientes';
-
-    private function sendRequest($url, $method, $xmlData = null) {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,
-        ["Content-Type: application/xml"]);
-
-        if ($xmlData) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlData);
-        }
-
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            die('Error en la solicitud: ' . curl_error($ch));
-        }
-
-        curl_close($ch);
-
-        return $response;
-    }
-
     public static function obtenerTodos() {
         global $conn;
         $sql = "SELECT * FROM cliente c INNER JOIN destino d ON c.idcliente = d.cliente_idcliente";
@@ -51,7 +27,7 @@ class Clientes {
         return $clientes;
     }
 
-    public static function buscarClientes($id) {
+    public static function buscarCliente($id) {
         global $conn;
         $sql = "SELECT * FROM cliente c INNER JOIN destino d ON c.idcliente = d.cliente_idcliente WHERE c.idcliente = ?";
         $stmt = $conn->prepare($sql);
@@ -86,6 +62,13 @@ class Clientes {
         return $stmt->execute();
     }
 
+    public static function registrarDestino($idCliente, $codPostal, $colonia, $calle, $num) {
+        global $conn;
+        $sql = "INSERT INTO destino (cliente_idcliente, codPostal, colonia, calle, num) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("issss", $idCliente, $codPostal, $colonia, $calle, $num);
+        return $stmt->execute();
+    }
     
 }
 ?>

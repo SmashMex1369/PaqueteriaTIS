@@ -5,11 +5,6 @@ require_once __DIR__ . '/../models/Paquetes.php';
 
 class PaquetesController {
 
-    private $modelo;
-    public function __construct() {
-        $this->modelo = new Paquetes();
-    }
-
     public static function obtenerTodos() {
         $paquetes = PaquetesService::obtenerTodos();
         $xml = XmlHandler::generarXML($paquetes, 'Paquetes', 'Paquete');
@@ -63,5 +58,16 @@ class PaquetesController {
                 echo "<Respuesta>Envio completado exitosamente</Respuesta>";
             }
         }
+    }
+
+    public static function obtenerGuiasPorIdRepartidor($idRepartidor) {
+        $paquetes = PaquetesService::obtenerGuiasPorIdRepartidor($idRepartidor);
+        if(!$paquetes) {
+            header('HTTP/1.1 404 Not Found');
+            return '<error>No se encontraron paquetes para el repartidor</error>';
+        }
+        $xml = XmlHandler::generarXML($paquetes, 'Paquetes', 'Paquete');
+        return $xml;
+        
     }
 }
