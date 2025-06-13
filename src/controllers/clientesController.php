@@ -56,4 +56,21 @@ class ClientesController {
         }
     }
 
+    public static function actualizarDestino($id) {
+        $data = file_get_contents('php://input');
+        $xml = simplexml_load_string($data);
+
+        $codPostal = (string)$xml->Direccion->{'C.P.'};
+        $colonia = (string)$xml->Direccion->Colonia;
+        $calle = (string)$xml->Direccion->Calle;
+        $num = (string)$xml->Direccion->Numero;
+
+        if(ClientesService::actualizarDestino($id, $codPostal, $colonia, $calle, $num)) {
+            header('HTTP/1.1 200 OK');
+            echo "<Respuesta>Destino actualizado exitosamente</Respuesta>";
+        } else {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo "<Error>Error al actualizar el destino</Error>";
+        }
+    }
 }

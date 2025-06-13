@@ -18,4 +18,8 @@ class ClientesService {
     public static function registrarDestino($idCliente, $codPostal, $colonia, $calle, $num) {
         return Clientes::registrarDestino($idCliente, $codPostal, $colonia, $calle, $num);
     }
+
+    public static function actualizarDestino($id, $codPostal, $colonia, $calle, $num) {
+        return Clientes::actualizarDestino($id, $codPostal, $colonia, $calle, $num);
+    }
 }

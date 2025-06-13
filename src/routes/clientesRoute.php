@@ -21,6 +21,11 @@ if($request_method === "GET" && $request_uri === '/api/clientes/obtenerTodos') {
     header('Content-Type: application/xml;charset=UTF-8');
     $xml = ClientesController::registrarDestino();
     echo $xml;
+} elseif($request_method === "PUT" && preg_match('/\/api\/clientes\/actualizarDestino\/(\d+)/', $request_uri, $matches)) {
+    $id = $matches[1];
+    header('Content-Type: application/xml;charset=UTF-8');
+    $xml = ClientesController::actualizarDestino($id);
+    echo $xml;
 }else {
     header('Content-Type: application/xml;charset=UTF-8');
     header('HTTP/1.1 404 Not Found');

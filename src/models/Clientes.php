@@ -70,5 +70,12 @@ class Clientes {
         return $stmt->execute();
     }
     
+    public static function actualizarDestino($id, $codPostal, $colonia, $calle, $num) {
+        global $conn;
+        $sql = "UPDATE destino SET codPostal = ?, colonia = ?, calle = ?, num = ? WHERE iddestino = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssi", $codPostal, $colonia, $calle, $num, $id);
+        return $stmt->execute();
+    }
 }
 ?>
