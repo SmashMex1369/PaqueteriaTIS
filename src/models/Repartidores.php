@@ -25,13 +25,14 @@ class Repartidores {
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        $repartidor = null;
+        $repartidor = [];
         if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $repartidor = [
-                'IDRepartidor' => $row['idrepartidor'],
-                'Nombre' => $row['nombre']
-            ];
+            while ($row = $result->fetch_assoc()) {
+                $repartidor[] = [
+                    'IDRepartidor' => $row['idrepartidor'],
+                    'Nombre' => $row['nombre']
+                ];
+            }
         }
         return $repartidor;
     }
