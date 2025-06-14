@@ -8,6 +8,10 @@ if($request_method === "GET" && $request_uri === '/api/clientes/obtenerTodos') {
     header('Content-Type: application/xml;charset=UTF-8');
     $xml = ClientesController::obtenerTodos();
     echo $xml;
+}elseif($request_method === "GET" && $request_uri === '/api/clientes/obtenerTodosSinDestinos') {
+    header('Content-Type: application/xml;charset=UTF-8');
+    $xml = ClientesController::obtenerTodosSinDestinos();
+    echo $xml;
 } elseif($request_method === "GET" && preg_match('/\/api\/clientes\/buscarCliente\/(\d+)/', $request_uri, $matches)) {
     $id = $matches[1];
     header('Content-Type: application/xml;charset=UTF-8');

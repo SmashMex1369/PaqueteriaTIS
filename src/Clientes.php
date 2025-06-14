@@ -15,6 +15,7 @@ $xml = simplexml_load_string($xmlContent);
     <div id="resultado"></div>
 
     <h2 id="tituloTabla">Todos los Clientes</h2>
+    <button id="botonCliente" onclick="mostrarFormulario('0',event)">Registrar Cliente</button>
     <table border="1">
         <thead>
             <tr>
@@ -41,7 +42,7 @@ $xml = simplexml_load_string($xmlContent);
                     <td><?php echo $cliente->Direccion->Calle; ?></td>
                     <td><?php echo $cliente->Direccion->Numero; ?></td>
                     <td>
-                        <button onclick="mostrarFormularioDireccion('<?php echo $cliente->IDCliente; ?>')">Cambiar dirección</button>
+                        <button id="botonDireccion" onclick="mostrarFormulario('<?php echo $cliente->IDCliente; ?>',event)">Cambiar dirección</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -57,7 +58,25 @@ $xml = simplexml_load_string($xmlContent);
             <label>Calle: <input type="text" id="formCalle" required></label><br>
             <label>Numero: <input type="text" id="formNumero" required></label><br>
             <button type="submit">Actualizar</button>
-            <button type="button" onclick="cerrarFormularioDireccion()">Cancelar</button>
+            <button id="cerrarDireccion" type="button" onclick="cerrarFormulario(event)">Cancelar</button>
+        </form>
+    </div>
+
+    <div id="formClienteModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+        <h3>Registrar cliente</h3>
+        <form id="formCliente" onsubmit="registrarCliente(event)">
+            <label>Nombre: <input type="text" id="formNombre" required></label><br>
+            <label>RFC: <input type="text" id="formRFC" required></label><br>
+            <label>Teléfono: <input type="text" id="formTelefono" required></label><br>
+            <fieldset style="margin-top:10px;">
+                <legend>Dirección</legend>
+                <label>C.P.: <input type="text" id="formCPCliente" required></label><br>
+                <label>Colonia: <input type="text" id="formColoniaCliente" required></label><br>
+                <label>Calle: <input type="text" id="formCalleCliente" required></label><br>
+                <label>Numero: <input type="text" id="formNumeroCliente" required></label><br>
+            </fieldset>
+            <button type="submit">Registrar</button>
+            <button type="button" id="cerrarCliente" onclick="cerrarFormulario(event)">Cancelar</button>
         </form>
     </div>
 
@@ -66,13 +85,108 @@ $xml = simplexml_load_string($xmlContent);
     const tituloTabla = document.getElementById('tituloTabla');
     const tablaClientes = document.getElementById('tablaClientes');
 
-    function mostrarFormularioDireccion(idCliente) {
-        document.getElementById('formIdCliente').value = idCliente;
-        document.getElementById('formDireccionModal').style.display = 'block';
+    function mostrarFormulario(idCliente, event) {
+        if (event.target.id === "botonDireccion") {
+            document.getElementById('formIdCliente').value = idCliente;
+            document.getElementById('formDireccionModal').style.display = 'block';
+            document.getElementById('formClienteModal').style.display = 'none';
+            document.getElementById('formCliente').reset();
+        }else if (event&&event.target&&event.target.id === "botonCliente")  {
+            document.getElementById('formClienteModal').style.display = 'block';
+            document.getElementById('formDireccionModal').style.display = 'none';
+            document.getElementById('formDireccion').reset();
+        }
     }
-    function cerrarFormularioDireccion() {
-        document.getElementById('formDireccionModal').style.display = 'none';
+
+    function cerrarFormulario(event) {
+        if(event.target.id === "cerrarDireccion") {
+            document.getElementById('formDireccionModal').style.display = 'none';
+            document.getElementById('formDireccion').reset();
+        }else if(event.target.id === "cerrarCliente") {
+            document.getElementById('formClienteModal').style.display = 'none';
+            document.getElementById('formCliente').reset();
+        }
     }
+
+    function registrarCliente(event) {
+        event.preventDefault();
+
+        const nombre = document.getElementById('formNombre').value;
+        const rfc = document.getElementById('formRFC').value;
+        const telefono = document.getElementById('formTelefono').value;
+        const cp = document.getElementById('formCPCliente').value;
+        const colonia = document.getElementById('formColoniaCliente').value;
+        const calle = document.getElementById('formCalleCliente').value;
+        const numero = document.getElementById('formNumeroCliente').value;
+
+        const xmlCliente = `<Cliente>
+            <Nombre>${nombre}</Nombre>
+            <RFC>${rfc}</RFC>
+            <Telefono>${telefono}</Telefono>
+        </Cliente>`;
+
+        fetch('http://localhost:5000/api/clientes/registrarCliente', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/xml' },
+            body: xmlCliente
+        })
+        .then(response => response.text())
+        .then(() => {
+            return fetch('http://localhost:5000/api/clientes/obtenerTodosSinDestinos', {
+                headers: { 'Accept': 'application/xml' }
+            });
+        })
+        .then(response => response.text())
+        .then(xmlText => {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, "application/xml");
+            const clientes = xml.getElementsByTagName('Cliente');
+            let idCliente = null;
+            for (let i = clientes.length - 1; i >= 0; i--) {
+                const c = clientes[i];
+                if (
+                    (c.getElementsByTagName('Nombre')[0]?.textContent || '') === nombre &&
+                    (c.getElementsByTagName('RFC')[0]?.textContent || '') === rfc &&
+                    (c.getElementsByTagName('Telefono')[0]?.textContent || '') === telefono
+                ) {
+                    idCliente = c.getElementsByTagName('IDCliente')[0]?.textContent || null;
+                    break;
+                }
+            }
+            if (!idCliente) {
+                alert("No se pudo obtener el ID del cliente registrado.");
+                return;
+            }
+
+            const xmlDestino = `<Destino>
+                <IDCliente>${idCliente}</IDCliente>
+                <Direccion>
+                    <C.P.>${cp}</C.P.>
+                    <Colonia>${colonia}</Colonia>
+                    <Calle>${calle}</Calle>
+                    <Numero>${numero}</Numero>
+                </Direccion>
+            </Destino>`;
+
+            return fetch('http://localhost:5000/api/clientes/registrarDestino', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/xml' },
+                body: xmlDestino
+            });
+        })
+        .then(response => {
+            if (response && response.ok) {
+                alert("Cliente registrado exitosamente");
+                cerrarFormulario({target: {id: "cerrarCliente"}});
+                cargarTodosLosClientes();
+            }
+        })
+        .catch(error => {
+            alert("Error al registrar el cliente");
+            cerrarFormulario({target: {id: "cerrarCliente"}});
+        });
+    }
+
     function enviarDireccion(event) {
         event.preventDefault();
         const idCliente = document.getElementById('formIdCliente').value;
@@ -96,7 +210,7 @@ $xml = simplexml_load_string($xmlContent);
         .then(response => response.text())
         .then(xmlText => {
             alert("Destino actualizado exitosamente");
-            cerrarFormularioDireccion();
+            cerrarFormulario();
             cargarTodosLosClientes();
         })
         .catch(error => {
@@ -104,6 +218,8 @@ $xml = simplexml_load_string($xmlContent);
             alert("Error al actualizar la dirección");
         });
     }
+
+
 
     function cargarTodosLosClientes() {
         tituloTabla.textContent = "Todos los Clientes";
@@ -127,7 +243,7 @@ $xml = simplexml_load_string($xmlContent);
                     <td>${cliente.getElementsByTagName('Direccion')[0]?.getElementsByTagName('Calle')[0]?.textContent || ''}</td>
                     <td>${cliente.getElementsByTagName('Direccion')[0]?.getElementsByTagName('Numero')[0]?.textContent || ''}</td>
                     <td>
-                        <button onclick="mostrarFormularioDireccion('${cliente.getElementsByTagName('IDCliente')[0]?.textContent || ''}')">Cambiar dirección</button>
+                        <button id="botonDireccion" onclick="mostrarFormulario('${cliente.getElementsByTagName('IDCliente')[0]?.textContent || ''}', event)">Cambiar dirección</button>
                     </td>
                 </tr>`;
             }
@@ -163,7 +279,7 @@ $xml = simplexml_load_string($xmlContent);
                             <td>${cliente.getElementsByTagName('Direccion')[0]?.getElementsByTagName('Calle')[0]?.textContent || ''}</td>
                             <td>${cliente.getElementsByTagName('Direccion')[0]?.getElementsByTagName('Numero')[0]?.textContent || ''}</td>
                             <td>
-                                <button onclick="mostrarFormularioDireccion('${cliente.getElementsByTagName('IDCliente')[0]?.textContent || ''}')">Cambiar dirección</button>
+                                <button id="botonDireccion" onclick="mostrarFormulario('${cliente.getElementsByTagName('IDCliente')[0]?.textContent || ''}',event)">Cambiar dirección</button>
                             </td>
                         </tr>`;
                     }

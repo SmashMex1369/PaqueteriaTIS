@@ -11,6 +11,12 @@ class ClientesController {
         return $xml;
     }
 
+    public static function obtenerTodosSinDestinos() {
+        $clientes = ClientesService::obtenerTodosSinDestinos();
+        $xml = XmlHandler::generarXML($clientes, 'Clientes', 'Cliente');
+        return $xml;
+    }
+
     public static function buscarCliente($id) {
         $cliente = ClientesService::buscarCliente($id);
         if(!$cliente) {

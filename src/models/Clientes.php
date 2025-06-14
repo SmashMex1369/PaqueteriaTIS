@@ -27,6 +27,24 @@ class Clientes {
         return $clientes;
     }
 
+    public static function obtenerTodosSinDestinos() {
+        global $conn;
+        $sql = "SELECT * FROM cliente";
+        $result = $conn->query($sql);
+        $clientes = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $clientes[] = [
+                    'IDCliente' => $row['idcliente'],
+                    'Nombre' => $row['nombre'],
+                    'RFC' => $row['rfc'],
+                    'Telefono' => $row['telefono'],
+                ];
+            }
+        }
+        return $clientes;
+    }
+
     public static function buscarCliente($id) {
         global $conn;
         $sql = "SELECT * FROM cliente c INNER JOIN destino d ON c.idcliente = d.cliente_idcliente WHERE c.idcliente = ?";

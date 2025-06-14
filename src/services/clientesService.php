@@ -7,6 +7,10 @@ class ClientesService {
         return Clientes::obtenerTodos();
     }
 
+    public static function obtenerTodosSinDestinos() {
+        return Clientes::obtenerTodosSinDestinos();
+    }
+
     public static function buscarCliente($id) {
         return Clientes::buscarCliente($id);
     }
