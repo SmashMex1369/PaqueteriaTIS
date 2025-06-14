@@ -15,6 +15,7 @@ $xml = simplexml_load_string($xmlContent);
     <div id="resultado"></div>
 
     <h2 id="tituloTabla">Todos los Repartidores</h2>
+    <button onclick="mostrarFormularioRepartidor()">Registrar Repartidor</button>
     <table border="1">
         <thead>
             <tr>
@@ -47,7 +48,49 @@ $xml = simplexml_load_string($xmlContent);
         </tbody>
     </table>
 
+    <div id="formRepartidorModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+        <h3>Registrar Repartidor</h3>
+        <form id="formRepartidor" onsubmit="registrarRepartidor(event)">
+            <label>Nombre: <input type="text" id="formNombreRepartidor" required></label><br>
+            <button type="submit">Registrar</button>
+            <button type="button" onclick="cerrarFormularioRepartidor()">Cancelar</button>
+        </form>
+    </div>
+
     <script>
+    function mostrarFormularioRepartidor() {
+        document.getElementById('formRepartidorModal').style.display = 'block';
+    }
+    function cerrarFormularioRepartidor() {
+        document.getElementById('formRepartidorModal').style.display = 'none';
+        document.getElementById('formRepartidor').reset();
+    }
+
+    function registrarRepartidor(event) {
+        event.preventDefault();
+        const nombre = document.getElementById('formNombreRepartidor').value;
+
+        const xmlBody = `<Repartidor>
+            <Nombre>${nombre}</Nombre>
+        </Repartidor>`;
+
+        fetch('http://localhost:5000/api/repartidores/registrarRepartidor', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/xml' },
+            body: xmlBody
+        })
+        .then(response => response.text())
+        .then(msg => {
+            alert("Repartidor registrado exitosamente");
+            cerrarFormularioRepartidor();
+            cargarTodosLosRepartidores();
+        })
+        .catch(error => {
+            alert("Error al registrar el repartidor");
+            cerrarFormularioRepartidor();
+        });
+    }
+
     const busqueda = document.getElementById('busqueda');
     const tituloTabla = document.getElementById('tituloTabla');
     const tablaRepartidores = document.getElementById('tablaRepartidores');
