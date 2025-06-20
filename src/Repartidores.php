@@ -5,11 +5,22 @@ $xml = simplexml_load_string($xmlContent);
 ?>
 <!DOCTYPE html>
 <html lang="es">
+<link rel="stylesheet" href="estilos.css">
 <head>
     <meta charset="UTF-8">
     <title>Repartidores</title>
 </head>
+
 <body>
+    <header>
+        <nav>
+            <ul class="nav-horizontal">
+                <li><a href="Repartidores.php">Repartidores</a></li>
+                <li><a href="Clientes.php">Clientes</a></li>
+                <li><a href="Paquetes.php">Paquetes</a></li>
+            </ul>
+        </nav>
+    </header>
     <h1>Buscar Repartidores</h1>
     <input type="text" id="busqueda" placeholder="ID Repartidor">
     <div id="resultado"></div>
@@ -48,7 +59,7 @@ $xml = simplexml_load_string($xmlContent);
         </tbody>
     </table>
 
-    <div id="formRepartidorModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+    <div id="formRepartidorModal">
         <h3>Registrar Repartidor</h3>
         <form id="formRepartidor" onsubmit="registrarRepartidor(event)">
             <label>Nombre: <input type="text" id="formNombreRepartidor" required></label><br>

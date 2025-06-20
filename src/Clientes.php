@@ -5,11 +5,21 @@ $xml = simplexml_load_string($xmlContent);
 ?>
 <!DOCTYPE html>
 <html lang="es">
+<link rel="stylesheet" href="estilos.css">
 <head>
     <meta charset="UTF-8">
     <title>Clientes</title>
 </head>
 <body>
+    <header>
+        <nav>
+            <ul class="nav-horizontal">
+                <li><a href="Repartidores.php">Repartidores</a></li>
+                <li><a href="Clientes.php">Clientes</a></li>
+                <li><a href="Paquetes.php">Paquetes</a></li>
+            </ul>
+        </nav>
+    </header>
     <h1>Buscar Clientes</h1>
     <input type="text" id="busqueda" placeholder="ID Cliente">
     <div id="resultado"></div>
@@ -49,7 +59,7 @@ $xml = simplexml_load_string($xmlContent);
         </tbody>
     </table>
 
-    <div id="formDireccionModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+    <div id="formDireccionModal">
         <h3>Actualizar dirección</h3>
         <form id="formDireccion" onsubmit="enviarDireccion(event)">
             <input type="hidden" id="formIdCliente">
@@ -62,13 +72,13 @@ $xml = simplexml_load_string($xmlContent);
         </form>
     </div>
 
-    <div id="formClienteModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, 0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+    <div id="formClienteModal">
         <h3>Registrar cliente</h3>
         <form id="formCliente" onsubmit="registrarCliente(event)">
             <label>Nombre: <input type="text" id="formNombre" required></label><br>
             <label>RFC: <input type="text" id="formRFC" required></label><br>
             <label>Teléfono: <input type="text" id="formTelefono" required></label><br>
-            <fieldset style="margin-top:10px;">
+            <fieldset>
                 <legend>Dirección</legend>
                 <label>C.P.: <input type="text" id="formCPCliente" required></label><br>
                 <label>Colonia: <input type="text" id="formColoniaCliente" required></label><br>
@@ -210,7 +220,7 @@ $xml = simplexml_load_string($xmlContent);
         .then(response => response.text())
         .then(xmlText => {
             alert("Destino actualizado exitosamente");
-            cerrarFormulario();
+            cerrarFormulario({target: {id: "cerrarDireccion"}});
             cargarTodosLosClientes();
         })
         .catch(error => {

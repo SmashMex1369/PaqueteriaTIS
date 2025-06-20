@@ -1,0 +1,78 @@
+#formPaqueteModal,
+#formClienteModal,
+#formDireccionModal,
+#formRepartidorModal {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1000;
+}
+
+fieldset {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #bbb;
+}
+
+legend {
+    font-weight: bold;
+}
+
+button {
+    padding: 5px 12px;
+    border-radius: 3px;
+    border: 1px solid #888;
+    background: #f5f5f5;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e0e0e0;
+}
+
+table {
+    border-collapse: collapse;
+    margin-top: 15px;
+    width: fit-content;
+    
+}
+
+th, td {
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    text-align: center;
+}
+
+th {
+    background: #f0f0f0;
+}
+
+.nav-horizontal {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-horizontal li {
+    display: inline;
+}
+
+.nav-horizontal a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 6px 12px;
+}
+
+.nav-horizontal a:hover {
+    background: #e0e0e0;
+    border-radius: 4px;
+}
